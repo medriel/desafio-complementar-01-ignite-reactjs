@@ -1,7 +1,7 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { api } from "./services/api";
 
-const MoviesContext = createContext({})
+const MoviesContext = createContext<MoviesContextData>({} as MoviesContextData)
 
 interface GenreResponseProps {
   id: number;
@@ -20,7 +20,19 @@ interface MovieProps {
   Runtime: string;
 }
 
-export function MoviesProvider({ }) {
+interface MoviesProviderProps {
+  children: ReactNode
+}
+
+interface MoviesContextData {
+  genres: GenreResponseProps[];
+  selectedGenreId: number;
+  selectedGenre: GenreResponseProps;
+  handleClickButton: (id: number) => void;
+  movies: MovieProps[];
+}
+
+export function MoviesProvider({ children }: MoviesProviderProps) {
   const [selectedGenreId, setSelectedGenreId] = useState(1);
 
   const [genres, setGenres] = useState<GenreResponseProps[]>([]);
@@ -47,4 +59,15 @@ export function MoviesProvider({ }) {
   function handleClickButton(id: number) {
     setSelectedGenreId(id);
   }
+  return (
+    <MoviesContext.Provider value={{ genres, selectedGenreId, selectedGenre, handleClickButton, movies }}>
+      {children}
+    </MoviesContext.Provider>
+  )
+}
+
+export function useMovies() {
+  const context = useContext(MoviesContext);
+
+  return context
 }
