@@ -1,8 +1,26 @@
-import { useMovies } from "../MoviesContext";
+import { memo } from "react";
 import { MovieCard } from "./MovieCard";
 
-export function Content() {
-  const { selectedGenre, movies } = useMovies();
+interface ContentProps {
+  selectedGenre: {
+    id: number;
+    name: 'action' | 'comedy' | 'documentary' | 'drama' | 'horror' | 'family';
+    title: string;
+  };
+
+  movies: Array<{
+    imdbID: string;
+    Title: string;
+    Poster: string;
+    Ratings: Array<{
+      Source: string;
+      Value: string;
+    }>;
+    Runtime: string;
+  }>;
+}
+
+function ContentComponent({ selectedGenre, movies }: ContentProps) {
   return (
     <div className="container">
       <header>
@@ -19,3 +37,7 @@ export function Content() {
     </div>
   )
 }
+
+export const Content = memo(ContentComponent, (prevProps, nextProps) => {
+  return prevProps.selectedGenre.name === nextProps.selectedGenre.name
+})
